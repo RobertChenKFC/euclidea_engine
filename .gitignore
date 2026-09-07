@@ -1,1 +1,3 @@
-target/
+/target
+/.devcontainer/devcontainer-lock.json
+/Cargo.lock

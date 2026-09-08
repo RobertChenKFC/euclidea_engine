@@ -1,0 +1,17 @@
+error[E0080]: evaluation panicked: assertion failed: is_prime(P)
+ --> src/field/finite_field.rs
+  |
+  |     const CHECK_PRIME: () = assert!(is_prime(P));
+  |                             ^^^^^^^^^^^^^^^^^^^^ evaluation of `euclidea_engine::field::finite_field::FiniteField::<51>::CHECK_PRIME` failed here
+
+note: erroneous constant encountered
+ --> src/field/finite_field.rs
+  |
+  |         let _ = Self::CHECK_PRIME;
+  |                 ^^^^^^^^^^^^^^^^^
+
+note: the above error was encountered while instantiating `fn FiniteField::<51>::new`
+ --> src/field/finite_field_composite_fail_test.rs:4:13
+  |
+4 |     let _ = FiniteField::<51>::new(3);
+  |             ^^^^^^^^^^^^^^^^^^^^^^^^^

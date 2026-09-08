@@ -7,7 +7,7 @@
 	"features": {
 		"ghcr.io/devcontainer-community/devcontainer-features/jj-vcs.dev:1": {},
 		"ghcr.io/guiyomh/features/vim:0": {}
-	}
+	},
 
 	// Use 'mounts' to make the cargo cache persistent in a Docker Volume.
 	// "mounts": [
@@ -25,7 +25,10 @@
 	// "forwardPorts": [],
 
 	// Use 'postCreateCommand' to run commands after the container is created.
-	// "postCreateCommand": "rustc --version",
+	"postCreateCommand": {
+		"jj": "jj config set --user user.name \"RobertChenKFC\" && jj config set --user user.email robert.chen.kfc@gmail.com",
+		"rust-nightly": "rustup component add rustfmt --toolchain nightly"
+	}
 
 	// Configure tool-specific properties.
 	// "customizations": {},

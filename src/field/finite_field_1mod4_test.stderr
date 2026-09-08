@@ -1,0 +1,17 @@
+error[E0080]: evaluation panicked: assertion failed: P % 4 == 3
+ --> src/field/finite_field.rs
+  |
+  |     const CHECK_3MOD4: () = assert!(P % 4 == 3);
+  |                             ^^^^^^^^^^^^^^^^^^^ evaluation of `euclidea_engine::field::finite_field::FiniteField::<29>::CHECK_3MOD4` failed here
+
+note: erroneous constant encountered
+ --> src/field/finite_field.rs
+  |
+  |         let _ = Self::CHECK_3MOD4;
+  |                 ^^^^^^^^^^^^^^^^^
+
+note: the above error was encountered while instantiating `fn FiniteField::<29>::new`
+ --> src/field/finite_field_1mod4_test.rs:4:13
+  |
+4 |     let _ = FiniteField::<29>::new(3);
+  |             ^^^^^^^^^^^^^^^^^^^^^^^^^

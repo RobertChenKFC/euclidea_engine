@@ -1,12 +1,12 @@
 use crate::field::Field;
-use std::ops::{Add, Mul};
+use std::ops::{Add, Div, Mul, Sub};
 
 /// A finite field is a field with finite number (P) of elements. We have some
 /// restrictions on P to make it easy to compute the inverses and square roots
 /// of the field elements (and also to make sure that it's actually a field):
 /// - We require that P is a prime number (for easy multiplicative inverse)
 /// - We require P = 3 (mod 4) (for easy square root)
-#[derive(PartialEq, Eq, Debug, Clone, Copy)]
+#[derive(PartialEq, Eq, Debug, Clone, Copy, Hash)]
 pub struct FiniteField<const P: u64>(u64);
 
 /// Standard power function computing (x ** p) % m.
@@ -151,6 +151,22 @@ impl<const P: u64> Mul for FiniteField<P> {
             "Since the product is mod P and P is u64, the product can never \
              overflow u64",
         ))
+    }
+}
+
+// TOOD: figure out how to deduplicate this
+impl<const P: u64> Sub for FiniteField<P> {
+    type Output = Self;
+
+    fn sub(self, rhs: Self) -> Self::Output {
+        Field::sub(self, rhs)
+    }
+}
+impl<const P: u64> Div for FiniteField<P> {
+    type Output = Self;
+
+    fn div(self, rhs: Self) -> Self::Output {
+        Field::div(self, rhs)
     }
 }
 

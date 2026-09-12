@@ -26,7 +26,7 @@
 
 	// Use 'postCreateCommand' to run commands after the container is created.
 	"postCreateCommand": {
-		"jj": "jj config set --user user.name \"RobertChenKFC\" && jj config set --user user.email robert.chen.kfc@gmail.com",
+		"jj": "jj config set --user user.name \"RobertChenKFC\" && jj config set --user user.email robert.chen.kfc@gmail.com && jj config set --user ui.editor vim",
 		"rust-nightly": "rustup component add rustfmt --toolchain nightly"
 	}
 

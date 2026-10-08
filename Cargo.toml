@@ -1,5 +1,5 @@
 [package]
-name = "euclidea-engine"
+name = "euclidea_engine"
 version = "0.1.0"
 edition = "2024"
 

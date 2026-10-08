@@ -1,8 +1,6 @@
 pub mod finite_field;
 
-use std::fmt::Debug;
-use std::hash::Hash;
-use std::ops::{Add, Div, Mul, Sub};
+use std::ops::{Add, Mul};
 
 /// A (mathematical) field, in layman terms, is essentially a group of elements
 /// that satisfies the following:
@@ -16,18 +14,7 @@ use std::ops::{Add, Div, Mul, Sub};
 /// which involve quadratic polynomials, we also require that the field
 /// implement a square root function. That is, for each element x, try to find
 /// the element sqrt(x) such that sqrt(x) * sqrt(x) = x.
-pub trait Field:
-    Add<Output = Self>
-    + Mul<Output = Self>
-    + Eq
-    + Sized
-    + Copy
-    + Clone
-    + Sub<Output = Self>
-    + Div<Output = Self>
-    + Debug
-    + Hash
-{
+pub trait Field: Add<Output = Self> + Mul<Output = Self> + Eq + Sized {
     /// The additive identity of the field.
     fn zero() -> Self;
     /// The multiplicative identity of the field.
@@ -38,12 +25,4 @@ pub trait Field:
     fn mul_inv(self) -> Self;
     /// The square root of `self` if it exists, None otherwise.
     fn sqrt(self) -> Option<Self>;
-
-    fn sub(self, rhs: Self) -> Self {
-        self + rhs.add_inv()
-    }
-
-    fn div(self, rhs: Self) -> Self {
-        self * rhs.mul_inv()
-    }
 }

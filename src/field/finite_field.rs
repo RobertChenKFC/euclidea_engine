@@ -1,5 +1,5 @@
 use crate::field::Field;
-use std::ops::{Add, Div, Mul, Sub};
+use std::ops::{Add, Div, Mul, Neg, Sub};
 
 /// A finite field is a field with finite number (P) of elements. We have some
 /// restrictions on P to make it easy to compute the inverses and square roots
@@ -201,6 +201,24 @@ impl<'a, 'b, const P: u64> Div<&'b FiniteField<P>> for &'a FiniteField<P> {
 
     fn div(self, rhs: &'b FiniteField<P>) -> Self::Output {
         *self / *rhs
+    }
+}
+
+// TODO: figure out how to deduplicate this
+impl<const P: u64> Neg for FiniteField<P> {
+    type Output = Self;
+
+    fn neg(self) -> Self::Output {
+        self.add_inv()
+    }
+}
+
+// TODO: figure out how to deduplicate this
+impl<'a, const P: u64> Neg for &'a FiniteField<P> {
+    type Output = FiniteField<P>;
+
+    fn neg(self) -> Self::Output {
+        self.add_inv()
     }
 }
 

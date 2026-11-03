@@ -3,12 +3,12 @@ use crate::field::real::Real;
 use rug::Float;
 use rug::float::ParseFloatError;
 use std::fmt::Debug;
-use std::ops::{Add, Div, Mul, Sub};
+use std::ops::{Add, Div, Mul, Neg, Sub};
 use std::str::FromStr;
 
 /// A wrapper for arbitrary precision float from Rug (wrapper of MPFR). All
 /// instances of `APFloat<P>` is gauranteed to have `P` bits of precision.
-#[derive(Clone, PartialEq)]
+#[derive(Clone, PartialEq, PartialOrd)]
 struct APFloat<const P: u32>(Float);
 
 impl<const P: u32> Debug for APFloat<P> {
@@ -100,6 +100,22 @@ impl<'a, 'b, const P: u32> Div<&'b APFloat<P>> for &'a APFloat<P> {
 
     fn div(self, rhs: &'b APFloat<P>) -> Self::Output {
         APFloat(Float::with_val(P, &self.0 / &rhs.0))
+    }
+}
+
+impl<const P: u32> Neg for APFloat<P> {
+    type Output = Self;
+
+    fn neg(self) -> Self::Output {
+        self.add_inv()
+    }
+}
+
+impl<'a, const P: u32> Neg for &'a APFloat<P> {
+    type Output = APFloat<P>;
+
+    fn neg(self) -> Self::Output {
+        self.add_inv()
     }
 }
 

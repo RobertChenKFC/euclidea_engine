@@ -13,8 +13,8 @@ use crate::solver::Point;
 /// which we can easily verify by substituing the points in and doing simple
 /// algebra.
 fn get_line_coeff<F: Field>(line: &Line<Point<F>>) -> (F, F, F) {
-    let Point(x1, y1) = line.point1;
-    let Point(x2, y2) = line.point2;
+    let Point(x1, y1) = &line.point1;
+    let Point(x2, y2) = &line.point2;
     (y1 - y2, x2 - x1, x1 * y2 - x2 * y1)
 }
 
@@ -26,9 +26,9 @@ fn get_circle_coeff<F: Field>(circle: &Circle<Point<F>>) -> (F, F, F) {
         center: Point(x1, y1),
         point: Point(x2, y2),
     } = circle;
-    let dx = *x1 - *x2;
-    let dy = *y1 - *y2;
-    (*x1, *y1, dx * dx + dy * dy)
+    let dx = &(x1 - x2);
+    let dy = &(y1 - y2);
+    (x1.clone(), y1.clone(), dx * dx + dy * dy)
 }
 
 /// `DefaultIntersector` is a naive algorithm for computing line and circle
@@ -40,17 +40,17 @@ impl<F: Field> Intersector<F> for DefaultIntersector {
         line1: &Line<Point<F>>,
         line2: &Line<Point<F>>,
     ) -> Vec<Point<F>> {
-        let (a1, b1, c1) = get_line_coeff(line1);
-        let (a2, b2, c2) = get_line_coeff(line2);
+        let (a1, b1, c1) = &get_line_coeff(line1);
+        let (a2, b2, c2) = &get_line_coeff(line2);
         let d = a1 * b2 - a2 * b1;
         if d == F::zero() {
             vec![]
         } else {
-            let d_inv = d.mul_inv();
+            let d_inv = &d.mul_inv();
             vec![
                 (Point(
-                    (b1 * c2 - b2 * c1) * d_inv,
-                    (c1 * a2 - c2 * a1) * d_inv,
+                    &(b1 * c2 - b2 * c1) * d_inv,
+                    &(c1 * a2 - c2 * a1) * d_inv,
                 )),
             ]
         }
@@ -60,21 +60,23 @@ impl<F: Field> Intersector<F> for DefaultIntersector {
         line: &Line<Point<F>>,
         circle: &Circle<Point<F>>,
     ) -> Vec<Point<F>> {
-        let (a, b, c) = get_line_coeff(&line);
-        let (u, v, r2) = get_circle_coeff(&circle);
-        let line_mag = a * a + b * b;
-        let line_mag_inv = line_mag.mul_inv();
-        let center_on_line = a * u + b * v + c;
-        let t0 = center_on_line * line_mag_inv;
-        let xm = u - a * t0;
-        let ym = v - b * t0;
+        let (a, b, c) = &get_line_coeff(&line);
+        let (u, v, r2) = &get_circle_coeff(&circle);
+        let line_mag = &(a * a + b * b);
+        let line_mag_inv = &(line_mag.mul_inv());
+        let center_on_line = &(&(a * u + b * v) + c);
+        let t0 = &(center_on_line * line_mag_inv);
+        let xm = &(u - &(a * t0));
+        let ym = &(v - &(b * t0));
         let discriminant = line_mag * r2 - center_on_line * center_on_line;
         match discriminant.sqrt() {
             Some(s) => {
-                let scale = s * line_mag_inv;
+                let scale = &(&s * line_mag_inv);
+                let a_scale = &(a * scale);
+                let b_scale = &(b * scale);
                 vec![
-                    Point(xm - b * scale, ym + a * scale),
-                    Point(xm + b * scale, ym - a * scale),
+                    Point(xm - b_scale, ym + a_scale),
+                    Point(xm + b_scale, ym - a_scale),
                 ]
             }
             None => {
@@ -87,25 +89,27 @@ impl<F: Field> Intersector<F> for DefaultIntersector {
         circle1: &Circle<Point<F>>,
         circle2: &Circle<Point<F>>,
     ) -> Vec<Point<F>> {
-        let (u1, v1, r12) = get_circle_coeff(circle1);
-        let (u2, v2, r22) = get_circle_coeff(circle2);
-        let dx = u2 - u1;
-        let dy = v2 - v1;
-        let d2 = dx * dx + dy * dy;
-        let two = F::one() + F::one();
-        let half = two.mul_inv();
-        let k = r12 - r22 + d2;
-        let half_k = k * half;
+        let (u1, v1, r12) = &get_circle_coeff(circle1);
+        let (u2, v2, r22) = &get_circle_coeff(circle2);
+        let dx = &(u2 - u1);
+        let dy = &(v2 - v1);
+        let d2 = &(dx * dx + dy * dy);
+        let two = &(F::one() + F::one());
+        let half = &two.mul_inv();
+        let k = &(&(r12 - r22) + d2);
+        let half_k = &(k * half);
         let discriminant = d2 * r12 - half_k * half_k;
         match discriminant.sqrt() {
             Some(s) => {
-                let scale = s / d2;
-                let two_d2_inv = (two * d2).mul_inv();
-                let xm = u1 + k * dx * two_d2_inv;
-                let ym = v1 + k * dy * two_d2_inv;
+                let scale = &(&s / d2);
+                let two_d2_inv = &((two * d2).mul_inv());
+                let xm = &(u1 + &(&(k * dx) * two_d2_inv));
+                let ym = &(v1 + &(&(k * dy) * two_d2_inv));
+                let dx_scale = &(dx * scale);
+                let dy_scale = &(dy * scale);
                 vec![
-                    Point(xm - dy * scale, ym + dx * scale),
-                    Point(xm + dy * scale, ym - dx * scale),
+                    Point(xm - dy_scale, ym + dx_scale),
+                    Point(xm + dy_scale, ym - dx_scale),
                 ]
             }
             None => {
@@ -126,8 +130,8 @@ mod tests {
         line: &Line<Point<F>>,
     ) -> bool {
         let Point(x, y) = point;
-        let (a, b, c) = get_line_coeff(&line);
-        a * (*x) + b * (*y) + c == F::zero()
+        let (a, b, c) = &get_line_coeff(&line);
+        &(a * x + b * y) + c == F::zero()
     }
 
     /// Returns true iff `point` is on `circle`.
@@ -136,10 +140,10 @@ mod tests {
         circle: &Circle<Point<F>>,
     ) -> bool {
         let Point(x1, y1) = point;
-        let (x2, y2, r2) = get_circle_coeff(&circle);
-        let dx = *x1 - x2;
-        let dy = *y1 - y2;
-        dx * dx + dy * dy == r2
+        let (x2, y2, r2) = &get_circle_coeff(&circle);
+        let dx = &(x1 - x2);
+        let dy = &(y1 - y2);
+        dx * dx + dy * dy == *r2
     }
 
     /// Test if `get_line_coeff` returns the correct coefficients for the line

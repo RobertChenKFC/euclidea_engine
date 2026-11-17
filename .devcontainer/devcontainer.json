@@ -24,10 +24,21 @@
 	// Use 'forwardPorts' to make a list of ports inside the container available locally.
 	// "forwardPorts": [],
 
+	// Run before VS Code attaches so rust-analyzer doesn't race with rustup.
+	"onCreateCommand": {
+		"rust-toolchain": "rustup show active-toolchain"
+	},
+
 	// Use 'postCreateCommand' to run commands after the container is created.
 	"postCreateCommand": {
-		"jj": "jj config set --user user.name \"RobertChenKFC\" && jj config set --user user.email robert.chen.kfc@gmail.com",
-		"rust-nightly": "rustup component add rustfmt --toolchain nightly"
+		"jj": "jj config set --user user.name \"RobertChenKFC\" && jj config set --user user.email robert.chen.kfc@gmail.com && jj config set --user ui.editor vim"
+	},
+	"customizations": {
+		"vscode": {
+			"extensions": [
+				"jj-view.jj-view"
+			]
+		}
 	}
 
 	// Configure tool-specific properties.

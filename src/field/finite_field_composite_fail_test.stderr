@@ -1,6 +1,8 @@
 error[E0080]: evaluation panicked: assertion failed: is_prime(P)
  --> src/field/finite_field.rs
   |
+  | impl<const P: u64> FiniteField<P> {
+  |     const CHECK_3MOD4: () = assert!(P % 4 == 3);
   |     const CHECK_PRIME: () = assert!(is_prime(P));
   |                             ^^^^^^^^^^^^^^^^^^^^ evaluation of `euclidea_engine::field::finite_field::FiniteField::<51>::CHECK_PRIME` failed here
 

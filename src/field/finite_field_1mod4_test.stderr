@@ -1,6 +1,7 @@
 error[E0080]: evaluation panicked: assertion failed: P % 4 == 3
  --> src/field/finite_field.rs
   |
+  | impl<const P: u64> FiniteField<P> {
   |     const CHECK_3MOD4: () = assert!(P % 4 == 3);
   |                             ^^^^^^^^^^^^^^^^^^^ evaluation of `euclidea_engine::field::finite_field::FiniteField::<29>::CHECK_3MOD4` failed here
 

@@ -5,3 +5,4 @@ edition = "2024"
 
 [dependencies]
 trybuild = "1.0.120"
+boundy = { git = "https://github.com/vdods/boundy" }

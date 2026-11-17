@@ -232,15 +232,15 @@ mod tests {
         fn choose_free_point(object_id: ObjectId) -> Point<F> {
             let zero = F::zero();
             let one = F::one();
-            let two = one + one;
-            let three = two + one;
-            let four = three + one;
-            let five = four + one;
-            let six = five + one;
+            let two = &one + &one;
+            let three = &two + &one;
+            let four = &three + &one;
+            let five = &four + &one;
+            let six = &five + &one;
             match object_id.0 {
-                0 => Point(zero, zero),
-                1 => Point(five, zero),
-                2 => Point(six, zero),
+                0 => Point(zero.clone(), zero.clone()),
+                1 => Point(five, zero.clone()),
+                2 => Point(six, zero.clone()),
                 3 => Point(one, zero),
                 _ => panic!("Expected only 4 free points"),
             }
@@ -258,14 +258,14 @@ mod tests {
             let zero = F::zero();
             let one = F::one();
             let neg_one = one.add_inv();
-            let two = one + one;
-            let three = two + one;
-            let four = three + one;
+            let two = &one + &one;
+            let three = &two + &one;
+            let four = &three + &one;
             let five = four + one;
             match object_id.0 {
-                0 => Point(zero, zero),
-                1 => Point(five, zero),
-                2 => Point(three, zero),
+                0 => Point(zero.clone(), zero.clone()),
+                1 => Point(five, zero.clone()),
+                2 => Point(three, zero.clone()),
                 3 => Point(neg_one, zero),
                 _ => panic!("Expected only 4 free points"),
             }

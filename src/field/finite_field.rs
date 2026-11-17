@@ -98,11 +98,11 @@ impl<const P: u64> Field for FiniteField<P> {
         Self(1)
     }
 
-    fn add_inv(self) -> Self {
+    fn add_inv(&self) -> Self {
         Self(P - self.0)
     }
 
-    fn mul_inv(self) -> Self {
+    fn mul_inv(&self) -> Self {
         // By Fermat's Little Theorem,
         //   x**(p-1) = 1 (mod p),
         // so
@@ -110,7 +110,7 @@ impl<const P: u64> Field for FiniteField<P> {
         Self(pow(self.0, P - 2, P))
     }
 
-    fn sqrt(self) -> Option<Self> {
+    fn sqrt(&self) -> Option<Self> {
         // By Euler's Criterion, we have
         //   x**((p - 1) / 2) = 1 (mod p)
         // if x is a quadratic residue (ie. has a square root). Since we
@@ -122,7 +122,7 @@ impl<const P: u64> Field for FiniteField<P> {
         //   = x**((p + 1) / 2)
         //   = (x**((p + 1) / 4))**2 (mod p)
         let s = Self(pow(self.0, (P + 1) / 4, P));
-        if s * s == self { Some(s) } else { None }
+        if &(s * s) == self { Some(s) } else { None }
     }
 }
 
@@ -140,6 +140,14 @@ impl<const P: u64> Add for FiniteField<P> {
     }
 }
 
+impl<'a, 'b, const P: u64> Add<&'b FiniteField<P>> for &'a FiniteField<P> {
+    type Output = FiniteField<P>;
+
+    fn add(self, rhs: &'b FiniteField<P>) -> Self::Output {
+        *self + *rhs
+    }
+}
+
 impl<const P: u64> Mul for FiniteField<P> {
     type Output = FiniteField<P>;
 
@@ -154,6 +162,14 @@ impl<const P: u64> Mul for FiniteField<P> {
     }
 }
 
+impl<'a, 'b, const P: u64> Mul<&'b FiniteField<P>> for &'a FiniteField<P> {
+    type Output = FiniteField<P>;
+
+    fn mul(self, rhs: &'b FiniteField<P>) -> Self::Output {
+        *self * *rhs
+    }
+}
+
 // TODO: figure out how to deduplicate this
 impl<const P: u64> Sub for FiniteField<P> {
     type Output = Self;
@@ -163,12 +179,28 @@ impl<const P: u64> Sub for FiniteField<P> {
     }
 }
 
+impl<'a, 'b, const P: u64> Sub<&'b FiniteField<P>> for &'a FiniteField<P> {
+    type Output = FiniteField<P>;
+
+    fn sub(self, rhs: &'b FiniteField<P>) -> Self::Output {
+        *self - *rhs
+    }
+}
+
 // TODO: figure out how to deduplicate this
 impl<const P: u64> Div for FiniteField<P> {
     type Output = Self;
 
     fn div(self, rhs: Self) -> Self::Output {
         Field::div(self, rhs)
+    }
+}
+
+impl<'a, 'b, const P: u64> Div<&'b FiniteField<P>> for &'a FiniteField<P> {
+    type Output = FiniteField<P>;
+
+    fn div(self, rhs: &'b FiniteField<P>) -> Self::Output {
+        *self / *rhs
     }
 }
 

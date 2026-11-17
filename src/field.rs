@@ -1,8 +1,79 @@
 pub mod finite_field;
 
+use boundy::Where;
 use std::fmt::Debug;
-use std::hash::Hash;
 use std::ops::{Add, Div, Mul, Sub};
+
+/// A trait alias that allows adding two instances or two references.
+pub trait AddAny:
+    Sized
+    + Add<Output = Self>
+    + for<'a, 'b> Where<&'a Self, Implements: Add<&'b Self, Output = Self>>
+{
+}
+
+/// Blanket implementation for `AddAny`.
+impl<T> AddAny for T where
+    T: Sized
+        + Add<Output = Self>
+        + for<'a, 'b> Where<&'a Self, Implements: Add<&'b Self, Output = Self>>
+{
+}
+
+/// Same as `AddAny`, but for subtraction.
+pub trait SubAny:
+    Sized
+    + Sub<Output = Self>
+    + for<'a, 'b> Where<&'a Self, Implements: Sub<&'b Self, Output = Self>>
+{
+}
+
+/// Blanket implementation for `SubAny`.
+impl<T> SubAny for T where
+    T: Sized
+        + Sub<Output = Self>
+        + for<'a, 'b> Where<&'a Self, Implements: Sub<&'b Self, Output = Self>>
+{
+}
+
+/// Same as `AddAny`, but for multiplication.
+pub trait MulAny:
+    Sized
+    + Mul<Output = Self>
+    + for<'a, 'b> Where<&'a Self, Implements: Mul<&'b Self, Output = Self>>
+{
+}
+
+/// Blanket implementation for `MulAny`.
+impl<T> MulAny for T where
+    T: Sized
+        + Mul<Output = Self>
+        + for<'a, 'b> Where<&'a Self, Implements: Mul<&'b Self, Output = Self>>
+{
+}
+
+/// Same as `AddAny`, but for division.
+pub trait DivAny:
+    Sized
+    + Div<Output = Self>
+    + for<'a, 'b> Where<&'a Self, Implements: Div<&'b Self, Output = Self>>
+{
+}
+
+/// Blanket implementation for `DivAny`.
+impl<T> DivAny for T where
+    T: Sized
+        + Div<Output = Self>
+        + for<'a, 'b> Where<&'a Self, Implements: Div<&'b Self, Output = Self>>
+{
+}
+
+/// A trait alias that allows performing standard arithmetic on two instances or
+/// two references.
+pub trait ArithAny: AddAny + SubAny + MulAny + DivAny {}
+
+/// Blanket implementation for `ArithAny`.
+impl<T> ArithAny for T where T: AddAny + SubAny + MulAny + DivAny {}
 
 /// A (mathematical) field, in layman terms, is essentially a group of elements
 /// that satisfies the following:
@@ -16,28 +87,17 @@ use std::ops::{Add, Div, Mul, Sub};
 /// which involve quadratic polynomials, we also require that the field
 /// implement a square root function. That is, for each element x, try to find
 /// the element sqrt(x) such that sqrt(x) * sqrt(x) = x.
-pub trait Field:
-    Add<Output = Self>
-    + Mul<Output = Self>
-    + Eq
-    + Sized
-    + Copy
-    + Clone
-    + Sub<Output = Self>
-    + Div<Output = Self>
-    + Debug
-    + Hash
-{
+pub trait Field: ArithAny + PartialEq + Clone + Debug {
     /// The additive identity of the field.
     fn zero() -> Self;
     /// The multiplicative identity of the field.
     fn one() -> Self;
     /// The additive inverse of `self`.
-    fn add_inv(self) -> Self;
+    fn add_inv(&self) -> Self;
     /// The multiplicative inverse of `self`.
-    fn mul_inv(self) -> Self;
+    fn mul_inv(&self) -> Self;
     /// The square root of `self` if it exists, None otherwise.
-    fn sqrt(self) -> Option<Self>;
+    fn sqrt(&self) -> Option<Self>;
 
     /// Subtract `rhs` is a shorthand for adding the addititve inverse of `rhs`.
     fn sub(self, rhs: Self) -> Self {

@@ -1,9 +1,10 @@
+pub mod complex_field;
 pub mod finite_field;
 pub mod real;
 
 use boundy::Where;
 use std::fmt::Debug;
-use std::ops::{Add, Div, Mul, Sub};
+use std::ops::{Add, Div, Mul, Neg, Sub};
 
 /// A trait alias that allows adding two instances or two references.
 pub trait AddAny:
@@ -69,12 +70,28 @@ impl<T> DivAny for T where
 {
 }
 
+/// Same as `AddAny`, but for negation.
+pub trait NegAny:
+    Sized
+    + Neg<Output = Self>
+    + for<'a> Where<&'a Self, Implements: Neg<Output = Self>>
+{
+}
+
+/// Blanket implementation for `NegAny`.
+impl<T> NegAny for T where
+    T: Sized
+        + Neg<Output = Self>
+        + for<'a> Where<&'a Self, Implements: Neg<Output = Self>>
+{
+}
+
 /// A trait alias that allows performing standard arithmetic on two instances or
 /// two references.
-pub trait ArithAny: AddAny + SubAny + MulAny + DivAny {}
+pub trait ArithAny: AddAny + SubAny + MulAny + DivAny + NegAny {}
 
 /// Blanket implementation for `ArithAny`.
-impl<T> ArithAny for T where T: AddAny + SubAny + MulAny + DivAny {}
+impl<T> ArithAny for T where T: AddAny + SubAny + MulAny + DivAny + NegAny {}
 
 /// A (mathematical) field, in layman terms, is essentially a group of elements
 /// that satisfies the following:
